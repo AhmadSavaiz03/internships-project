@@ -1,4 +1,66 @@
+import JobComponent from "./JobComponent";
+import { useEffect, useState } from "react";
+import JobModel from "../../../models/JobModel";
+
 export const Carousel = () => {
+  // I want non static data fetching
+  const [jobs, setJobs] = useState<JobModel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState(null);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      // fetching
+      const baseUrl: string = "http://localhost:8080/api/jobs";
+      const url: string = `${baseUrl}?page=0`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Something went wrong while fetching from API");
+      }
+
+      // json to data
+      const responseJson = await response.json();
+      const responseData = responseJson._embedded.jobs;
+      const loadedJobs: JobModel[] = [];
+      for (const key in responseData) {
+        loadedJobs.push({
+          id: responseData[key].id,
+          title: responseData[key].title,
+          description: responseData[key].description,
+          company: responseData[key].company,
+          location: responseData[key].location,
+          keywords: responseData[key].keywords,
+          date_posted: responseData[key].date_posted,
+          created_at: responseData[key].created_at,
+          updated_at: responseData[key].updated_at,
+        });
+      }
+      setJobs(loadedJobs);
+      setIsLoading(false);
+    };
+
+    fetchJobs().catch((error: any) => {
+      setIsLoading(false);
+      setHttpError(error.message);
+    });
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="container m-5">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (httpError) {
+    return (
+      <div className="container m-5">
+        <p>{httpError}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-5" style={{ height: 550 }}>
       <div className="homepage-carousel-title">
@@ -13,16 +75,23 @@ export const Carousel = () => {
         <div className="carousel-inner">
           <div className="carousel-item active">
             <div className="row d-flex justify-content-center align-items-center">
-              <div className="col-xs-6 col-sm-6 col-md-4 col-lg-3 mb-3">
-                <div className="text-center">
-                  <img src="" alt="not available" />
-                  <h6 className="mt-2">Internship</h6>
-                  <p>FindYourInternship</p>
-                  <a className="btn main-color text-white" href="#">
-                    Check
-                  </a>
-                </div>
-              </div>
+              {jobs.slice(0, 3).map((job) => (
+                <JobComponent job={job} key={job.id} />
+              ))}
+            </div>
+          </div>
+          <div className="carousel-item">
+            <div className="row d-flex justify-content-center align-items-center">
+              {jobs.slice(3, 6).map((job) => (
+                <JobComponent job={job} key={job.id} />
+              ))}
+            </div>
+          </div>
+          <div className="carousel-item">
+            <div className="row d-flex justify-content-center align-items-center">
+              {jobs.slice(6, 9).map((job) => (
+                <JobComponent job={job} key={job.id} />
+              ))}
             </div>
           </div>
           <button
@@ -54,16 +123,7 @@ export const Carousel = () => {
         {/* {Mobile} */}
         <div className="d-lg-none mt-3">
           <div className="row d-flex justify-content-center align-items-center">
-            <div className="text-center">
-              <img src="" alt="" />
-              <h6 className="mt-2">
-                <b>Book</b>
-              </h6>
-              <p>FindYourInternship</p>
-              <a className="btn main-color text-white" href="#">
-                Check
-              </a>
-            </div>
+            <JobComponent job={jobs[0]} key={jobs[0].id} />
           </div>
         </div>
         <div className="homepage-carousel-title mt-3">

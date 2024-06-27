@@ -7,6 +7,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
+//This is used to make sure a user cannot edit the database without admin access
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
     private String theAllowedOrigins = "http://localhost:3000";

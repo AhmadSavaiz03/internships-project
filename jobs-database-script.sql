@@ -1,69 +1,72 @@
--- Drop the database if it exists
+-- \i 'C:/Users/dell/Documents/Projects/Internships_First_Draft/jobs-database-script.sql'
+
 DROP DATABASE IF EXISTS jobsdatabase;
 
--- Create the database
 CREATE DATABASE jobsdatabase;
 
--- Connect to the database
 \connect jobsdatabase;
 
--- Drop existing tables if they exist
 DROP TABLE IF EXISTS jobs;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS subscriptions;
 DROP TABLE IF EXISTS messages;
 
--- Create the jobs table
 CREATE TABLE jobs (
-  id BIGSERIAL PRIMARY KEY,  -- Auto-incrementing primary key
-  title VARCHAR(100) NOT NULL,  -- Job title, not nullable
-  description TEXT,  -- Job description
-  company VARCHAR(100),  -- Company name
-  location VARCHAR(100),  -- Job location, single value
-  keywords TEXT[],  -- Array of keywords
-  date_posted TIMESTAMPTZ,  -- Date posted with timezone
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,  -- Record creation timestamp
-  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP  -- Record update timestamp
+  id BIGSERIAL PRIMARY KEY, 
+  title VARCHAR(100) NOT NULL,
+  description TEXT,
+  company VARCHAR(100),
+  location VARCHAR(100),
+  keywords TEXT[],
+  date_posted TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create the users table
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,  -- Auto-incrementing primary key
-  username VARCHAR(50) NOT NULL UNIQUE,  -- Unique username, not nullable
-  password VARCHAR(255) NOT NULL,  -- Password, not nullable
-  email VARCHAR(100) NOT NULL UNIQUE,  -- Unique email, not nullable
-  subscribed_roles TEXT[],  -- Array of roles the user is subscribed to
-  subscribed_locations TEXT[],  -- Array of locations the user is subscribed to
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,  -- Record creation timestamp
-  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP  -- Record update timestamp
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  subscribed_roles TEXT[],
+  subscribed_locations TEXT[],
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create the subscriptions table
 CREATE TABLE subscriptions (
-  id SERIAL PRIMARY KEY,  -- Auto-incrementing primary key
-  user_id INT REFERENCES users(id) ON DELETE CASCADE,  -- Foreign key to users table
-  role VARCHAR(100),  -- Role the user is subscribed to
-  location VARCHAR(100),  -- Location the user is subscribed to
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,  -- Record creation timestamp
-  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP  -- Record update timestamp
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
+  role VARCHAR(100),
+  location VARCHAR(100),
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create the messages table
 CREATE TABLE messages (
-  id BIGSERIAL PRIMARY KEY,  -- Auto-incrementing primary key
-  user_email VARCHAR(100),  -- Email of the user sending the message
-  title VARCHAR(100),  -- Title of the message
-  question TEXT,  -- User's question
-  admin_email VARCHAR(100),  -- Admin's email
-  response TEXT,  -- Admin's response
-  closed BOOLEAN DEFAULT FALSE,  -- Status of the message (open/closed)
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,  -- Record creation timestamp
-  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP  -- Record update timestamp
+  id BIGSERIAL PRIMARY KEY,
+  user_email VARCHAR(100),
+  title VARCHAR(100),
+  question TEXT,
+  admin_email VARCHAR(100),
+  response TEXT,
+  closed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
--- Example insertions to validate the schema (can be removed in production)
+-- example
 INSERT INTO jobs (title, description, company, location, keywords, date_posted) VALUES
-  ('Frontend Developer Intern', 'Develop frontend applications...', 'Tech Company', 'Dubai', ARRAY['React', 'JavaScript'], '2023-06-01 10:00:00');
+  ('Frontend Developer Intern', 'Develop frontend applications...', 'Tech Company A', 'Dubai', ARRAY['React', 'JavaScript'], '2024-06-01 10:00:00'),
+  ('Backend Developer Intern', 'Develop backend services...', 'Tech Company B', 'Dubai', ARRAY['Node.js', 'Express'], '2024-06-02 11:00:00'),
+  ('Data Scientist Intern', 'Analyze data and build models...', 'Analytics Co', 'Dubai', ARRAY['Python', 'Machine Learning'], '2024-06-03 12:00:00'),
+  ('Marketing Intern', 'Assist with marketing campaigns...', 'Marketing Agency', 'Abu Dhabi', ARRAY['SEO', 'Content Creation'], '2024-06-04 09:00:00'),
+  ('Product Manager Intern', 'Help manage product lifecycle...', 'Product Co', 'Sharjah', ARRAY['Product Management', 'Agile'], '2024-06-05 08:00:00'),
+  ('UI/UX Designer Intern', 'Design user interfaces...', 'Design Studio', 'Dubai', ARRAY['Figma', 'Adobe XD'], '2024-06-06 14:00:00'),
+  ('Sales Intern', 'Assist with sales strategies...', 'Sales Corp', 'Abu Dhabi', ARRAY['Salesforce', 'CRM'], '2024-06-07 13:00:00'),
+  ('HR Intern', 'Support HR activities...', 'HR Solutions', 'Dubai', ARRAY['Recruitment', 'Employee Engagement'], '2024-06-08 15:00:00'),
+  ('Finance Intern', 'Assist with financial analysis...', 'Finance Firm', 'Dubai', ARRAY['Excel', 'Financial Modeling'], '2024-06-09 16:00:00'),
+  ('IT Support Intern', 'Provide IT support...', 'IT Services', 'Dubai', ARRAY['Technical Support', 'Troubleshooting'], '2024-06-10 17:00:00');
 
 INSERT INTO users (username, password, email) VALUES
   ('john_doe', 'hashed_password', 'john@example.com');
