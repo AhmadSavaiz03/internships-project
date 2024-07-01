@@ -12,14 +12,21 @@ export const SearchJobsPage = () => {
   const [jobsPerPage] = useState(5);
   const [totalAmountOfJobs, setTotalAmountOfJobs] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [search, setSearch] = useState("");
+  const [searchUrl, setSearchUrl] = useState("");
 
   useEffect(() => {
     const fetchJobs = async () => {
       // fetching
       const baseUrl: string = "http://localhost:8080/api/jobs";
-      const url: string = `${baseUrl}?page=${
-        currentPage - 1
-      }&size=${jobsPerPage}`;
+      let url: string = ``;
+
+      if (searchUrl === "") {
+        url = `${baseUrl}?page=${currentPage - 1}&size=${jobsPerPage}`;
+      } else {
+        url = baseUrl + searchUrl;
+      }
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Something went wrong while fetching from API");
@@ -54,7 +61,7 @@ export const SearchJobsPage = () => {
       setHttpError(error.message);
     });
     window.scrollTo(0, 0);
-  }, [currentPage]); // important concept
+  }, [currentPage, searchUrl]); // important concept
 
   if (isLoading) {
     return <SpinnerLoading />;
@@ -67,6 +74,17 @@ export const SearchJobsPage = () => {
       </div>
     );
   }
+
+  // search logic
+  const searchHandleChange = () => {
+    if (search === "") {
+      setSearchUrl("");
+    } else {
+      setSearchUrl(
+        `/search/findByTitleContaining?title=${search}&page=0&size=${jobsPerPage}`
+      );
+    }
+  };
 
   const indexOfLastJob: number = currentPage + jobsPerPage;
   const indexOfFirstJob: number = indexOfLastJob - jobsPerPage;
@@ -89,8 +107,14 @@ export const SearchJobsPage = () => {
                   type="search"
                   placeholder="Search"
                   aria-labelledby="Search"
+                  onChange={(e) => setSearch(e.target.value)}
                 />
-                <button className="btn btn-outline-success">Search</button>
+                <button
+                  className="btn btn-outline-success"
+                  onClick={() => searchHandleChange()}
+                >
+                  Search
+                </button>
               </div>
             </div>
             <div className="col-4">
@@ -133,7 +157,7 @@ export const SearchJobsPage = () => {
             </div>
           </div>
           <div className="mt-3">
-            <h5>Number of results: ({totalAmountOfJobs})</h5>
+            <h5>Number of results: {totalAmountOfJobs}</h5>
           </div>
           <p>
             {" "}
