@@ -14,6 +14,7 @@ export const SearchJobsPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState("");
   const [searchUrl, setSearchUrl] = useState("");
+  const [categorySelection, setCategorySelection] = useState("Job category");
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -24,7 +25,11 @@ export const SearchJobsPage = () => {
       if (searchUrl === "") {
         url = `${baseUrl}?page=${currentPage - 1}&size=${jobsPerPage}`;
       } else {
-        url = baseUrl + searchUrl;
+        let searchWithPage = searchUrl.replace(
+          "<pageNumber>",
+          `${currentPage - 1}`
+        );
+        url = baseUrl + searchWithPage;
       }
 
       const response = await fetch(url);
@@ -77,12 +82,33 @@ export const SearchJobsPage = () => {
 
   // search logic
   const searchHandleChange = () => {
+    setCurrentPage(1);
     if (search === "") {
       setSearchUrl("");
     } else {
       setSearchUrl(
-        `/search/findByTitleContaining?title=${search}&page=0&size=${jobsPerPage}`
+        `/search/findByTitleContaining?title=${search}&page=<pageNumber>&size=${jobsPerPage}`
       );
+    }
+    setCategorySelection("Job category");
+  };
+
+  // FIX LATER
+  const categoryField = (value: string) => {
+    setCurrentPage(1);
+    if (
+      value.toLowerCase() === "fe" ||
+      value.toLowerCase() === "be" ||
+      value.toLowerCase() === "data" ||
+      value.toLowerCase() === "devops"
+    ) {
+      setCategorySelection(value);
+      setSearchUrl(
+        `/search/findByCategory?category=${value}&page=<pageNumber>&size=${jobsPerPage}`
+      );
+    } else {
+      setCategorySelection("All");
+      setSearchUrl(`?page=<pageNumber>&size=${jobsPerPage}`);
     }
   };
 
@@ -126,28 +152,28 @@ export const SearchJobsPage = () => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Category
+                  {categorySelection}
                 </button>
                 <ul
                   className="dropdown-menu"
                   aria-labelledby="dropdownMenuButton1"
                 >
-                  <li>
+                  <li onClick={() => categoryField("All")}>
                     <a className="dropdown-item" href="">
                       ALL
                     </a>
                   </li>
-                  <li>
+                  <li onClick={() => categoryField("FE")}>
                     <a className="dropdown-item" href="">
                       Front End
                     </a>
                   </li>
-                  <li>
+                  <li onClick={() => categoryField("BE")}>
                     <a className="dropdown-item" href="">
                       Back End
                     </a>
                   </li>
-                  <li>
+                  <li onClick={() => categoryField("DevOps")}>
                     <a className="dropdown-item" href="">
                       Dev Ops
                     </a>
