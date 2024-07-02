@@ -35,7 +35,7 @@ export const SearchJobsPage = () => {
       // json to data
       const responseJson = await response.json();
       const responseData = responseJson._embedded.jobs;
-      setTotalAmountOfJobs(responseJson.page.totalElement);
+      setTotalAmountOfJobs(responseJson.page.totalElements);
       setTotalPages(responseJson.page.totalPages);
 
       const loadedJobs: JobModel[] = [];
@@ -156,16 +156,32 @@ export const SearchJobsPage = () => {
               </div>
             </div>
           </div>
-          <div className="mt-3">
-            <h5>Number of results: {totalAmountOfJobs}</h5>
-          </div>
-          <p>
-            {" "}
-            {indexOfFirstJob + 1} to {lastItem} of {totalAmountOfJobs} items:
-          </p>
-          {jobs.map((job) => (
-            <SearchJob job={job} key={job.id} />
-          ))}
+          {totalAmountOfJobs > 0 ? (
+            <>
+              <div className="mt-3">
+                <h5>Number of results: ({totalAmountOfJobs})</h5>
+              </div>
+              <p>
+                {indexOfFirstJob + 1} to {lastItem} of {totalAmountOfJobs}{" "}
+                items:
+              </p>
+              {jobs.map((job) => (
+                <SearchJob job={job} key={job.id} />
+              ))}
+            </>
+          ) : (
+            <div className="m-5">
+              <h3>The roles you are looking for are not available.</h3>
+              <a
+                type="button"
+                className="btn main-color btn-md px-4 me-md-2 fw-bold text-white"
+                href="#"
+              >
+                Library Services
+              </a>
+            </div>
+          )}
+
           {/* only paginate of greater than 1 */}
           {totalPages > 1 && (
             <Pagination
