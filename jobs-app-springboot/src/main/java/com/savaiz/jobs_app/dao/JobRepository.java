@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface JobRepository extends JpaRepository<Job, Long> {
 
     Page<Job> findByTitleContaining(@RequestParam("title") String title, Pageable pageable);
-    Page<Job> findByCategory(@RequestParam("description") String description, Pageable pageable);
+    Page<Job> findByDescription(@RequestParam("description") String description, Pageable pageable);
 }

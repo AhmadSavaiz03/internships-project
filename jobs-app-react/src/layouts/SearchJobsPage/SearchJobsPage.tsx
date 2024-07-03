@@ -104,7 +104,7 @@ export const SearchJobsPage = () => {
     ) {
       setCategorySelection(value);
       setSearchUrl(
-        `/search/findByCategory?category=${value}&page=<pageNumber>&size=${jobsPerPage}`
+        `/search/findByDescription?description=${value}&page=<pageNumber>&size=${jobsPerPage}`
       );
     } else {
       setCategorySelection("All");
@@ -188,8 +188,7 @@ export const SearchJobsPage = () => {
                 <h5>Number of results: ({totalAmountOfJobs})</h5>
               </div>
               <p>
-                {indexOfFirstJob + 1} to {lastItem} of {totalAmountOfJobs}{" "}
-                items:
+                {indexOfFirstJob} to {lastItem} of {totalAmountOfJobs} items:
               </p>
               {jobs.map((job) => (
                 <SearchJob job={job} key={job.id} />
