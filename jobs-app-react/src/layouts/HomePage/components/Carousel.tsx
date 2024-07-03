@@ -2,6 +2,7 @@ import JobComponent from "./JobComponent";
 import { useEffect, useState } from "react";
 import JobModel from "../../../models/JobModel";
 import { SpinnerLoading } from "../../utils/SpinnerLoading";
+import { Link } from "react-router-dom";
 
 export const Carousel = () => {
   // I want non static data fetching
@@ -124,9 +125,9 @@ export const Carousel = () => {
           </div>
         </div>
         <div className="homepage-carousel-title mt-3">
-          <a className="btn btn-outline-secondary btn-lg" href="#">
+          <Link className="btn btn-outline-secondary btn-lg" to={"/search"}>
             View More
-          </a>
+          </Link>
         </div>
       </div>
     </div>
