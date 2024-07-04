@@ -4,6 +4,7 @@ import { Footer } from "./layouts/Navbar-Footer/Footer";
 import { HomePage } from "./layouts/HomePage/HomePage";
 import { SearchJobsPage } from "./layouts/SearchJobsPage/SearchJobsPage";
 import { Redirect, Route, Switch } from "react-router-dom";
+import { JobInformationPage } from "./layouts/JobInformationPage/JobInformationPage";
 
 function App() {
   return (
@@ -22,6 +23,10 @@ function App() {
 
           <Route path="/search">
             <SearchJobsPage />
+          </Route>
+
+          <Route path="/info/:jobId">
+            <JobInformationPage />
           </Route>
         </Switch>
       </div>

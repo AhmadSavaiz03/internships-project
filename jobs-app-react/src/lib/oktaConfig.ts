@@ -1,0 +1,10 @@
+import { transpileModule } from "typescript";
+
+export const oktaConfig = {
+    clientId: '0oagdv5eirxptfYZd697',
+    issuer: 'https://trial-8073086.okta.com/oauth2/default',
+    redirectUri: 'http://localhost:3000/login/callback',
+    scopes: ['openid','profile','email'],
+    pkce: true,
+    disableHttpsCheck: true,
+}

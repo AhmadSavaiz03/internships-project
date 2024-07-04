@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import JobModel from "../../../models/JobModel";
 
 export const SearchJob: React.FC<{ job: JobModel }> = (props) => {
@@ -31,9 +32,12 @@ export const SearchJob: React.FC<{ job: JobModel }> = (props) => {
               </small>
             </p>
             <div className="col-md-4 d-flex justify-content-center align-items-center">
-              <a className="btn btn-,d main-color text-white" href="#">
+              <Link
+                className="btn btn-,d main-color text-white"
+                to={`/info/${props.job.id}`}
+              >
                 View Details
-              </a>
+              </Link>
             </div>
           </div>
         </div>
