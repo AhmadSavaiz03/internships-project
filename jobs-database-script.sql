@@ -1,5 +1,7 @@
 -- \i 'C:/Users/dell/Documents/Projects/Internships_First_Draft/jobs-database-script.sql'
 
+\connect postgres
+
 DROP DATABASE IF EXISTS jobsdatabase;
 
 CREATE DATABASE jobsdatabase;
@@ -36,12 +38,21 @@ CREATE TABLE users (
 
 CREATE TABLE subscriptions (
   id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES users(id) ON DELETE CASCADE,
-  role VARCHAR(100),
-  location VARCHAR(100),
+  -- user_id INT REFERENCES users(id) ON DELETE CASCADE,
+  user_email VARCHAR(100),
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE subscription_roles (
+  subscription_id INT REFERENCES subscriptions(id) ON DELETE CASCADE,
+  role TEXT
+);
+CREATE TABLE subscription_regions (
+  subscription_id INT REFERENCES subscriptions(id) ON DELETE CASCADE,
+  region TEXT
+);
+
+
 
 CREATE TABLE messages (
   id BIGSERIAL PRIMARY KEY,
@@ -71,8 +82,24 @@ INSERT INTO jobs (title, description, company, location, keywords, date_posted) 
 INSERT INTO users (username, password, email) VALUES
   ('john_doe', 'hashed_password', 'john@example.com');
 
-INSERT INTO subscriptions (user_id, role, location) VALUES
-  (1, 'Frontend Developer', 'Dubai');
+
+INSERT INTO subscriptions (user_email) VALUES 
+('user1@example.com'),
+('user2@example.com'),
+('user3@example.com');
+INSERT INTO subscription_roles (subscription_id, role) VALUES 
+(1, 'Admin'),
+(1, 'User'),
+(2, 'Moderator'),
+(3, 'User'),
+(3, 'Guest');
+INSERT INTO subscription_regions (subscription_id, region) VALUES 
+(1, 'North America'),
+(1, 'Europe'),
+(2, 'Asia'),
+(3, 'Australia'),
+(3, 'Africa');
+
 
 INSERT INTO messages (user_email, title, question, admin_email, response, closed) VALUES
   ('john@example.com', 'Issue with login', 'I cannot log in...', 'admin@example.com', 'Please reset your password...', FALSE);

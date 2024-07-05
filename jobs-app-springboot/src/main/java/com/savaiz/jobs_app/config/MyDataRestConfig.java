@@ -10,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 //This is used to make sure a user cannot edit the database without admin access
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
-    private String theAllowedOrigins = "http://localhost:3000";
 
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config,
@@ -27,6 +26,7 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
         disableHttpMethods(Job.class, config, theUnsupportedActions);
 
 //        Configure CORS Mapping
+        String theAllowedOrigins = "http://localhost:3000";
         cors.addMapping(config.getBasePath() + "/**")
                 .allowedOrigins(theAllowedOrigins);
     }
