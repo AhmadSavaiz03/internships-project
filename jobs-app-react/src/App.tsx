@@ -9,6 +9,7 @@ import { oktaConfig } from './lib/oktaConfig';
 import { OktaAuth, toRelativeUrl } from '@okta/okta-auth-js';
 import { LoginCallback, Security } from '@okta/okta-react';
 import LoginWidget from './auth/LoginWidget';
+import SubscribePage from './layouts/SubscribePage/SubscribePage';
 
 const oktaAuth = new OktaAuth(oktaConfig);
 function App() {
@@ -46,6 +47,10 @@ function App() {
 
             <Route path='/info/:jobId'>
               <JobInformationPage />
+            </Route>
+
+            <Route path='/subscribe'>
+              <SubscribePage />
             </Route>
           </Switch>
         </div>

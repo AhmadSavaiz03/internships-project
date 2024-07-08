@@ -20,12 +20,22 @@ public class SubscriptionController {
         this.subscriptionService = subscriptionService;
     }
 
-    @PutMapping("/secure/subscribe")
+    @PutMapping("/submit")
     public Subscription subscribe(@RequestHeader(value = "Authorization") String token,
                                   @RequestBody SubscriptionRequest subscriptionRequest) throws Exception {
         String userEmail = ExtractJWT.payloadJWTExtraction(token, "\"sub\"");
         List<String> roles = subscriptionRequest.getRoles();
         List<String> regions = subscriptionRequest.getRegions();
         return subscriptionService.subscribe(userEmail, roles, regions);
+    }
+
+    @GetMapping("/roles")
+    public List<String> getAllRoles() {
+        return subscriptionService.getAllRoles();
+    }
+
+    @GetMapping("/regions")
+    public List<String> getAllRegions() {
+        return subscriptionService.getAllRegions();
     }
 }

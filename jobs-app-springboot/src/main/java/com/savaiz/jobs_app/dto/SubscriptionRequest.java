@@ -11,5 +11,4 @@ public class SubscriptionRequest {
     private String userEmail;
     private List<String> roles;
     private List<String> regions;
-
 }

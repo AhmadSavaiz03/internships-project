@@ -13,8 +13,11 @@ import java.util.Optional;
 @Transactional
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
-    public SubscriptionService(SubscriptionRepository subscriptionRepository) {
+    private final JobRepository jobRepository;
+
+    public SubscriptionService(SubscriptionRepository subscriptionRepository, JobRepository jobRepository) {
         this.subscriptionRepository = subscriptionRepository;
+        this.jobRepository = jobRepository;
     }
 
     public Subscription subscribe(String userEmail, List<String> roles, List<String> regions) throws Exception {
@@ -27,5 +30,13 @@ public class SubscriptionService {
         Subscription subscription = new Subscription(userEmail, roles, regions);
 
         return subscriptionRepository.save(subscription);
+    }
+
+    public List<String> getAllRoles() {
+        return jobRepository.findAllDistinctRoles();
+    }
+
+    public List<String> getAllRegions() {
+        return jobRepository.findAllDistinctRegions();
     }
 }

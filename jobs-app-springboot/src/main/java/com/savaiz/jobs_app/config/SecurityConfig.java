@@ -9,6 +9,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -33,7 +37,16 @@ public class SecurityConfig {
         );
 
         // Add CORS filter
-        http.cors(cors -> {});
+        // Added without security consideration
+        http.cors(cors -> {
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow your React app origin
+            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            config.setAllowedHeaders(Arrays.asList("*"));
+            source.registerCorsConfiguration("/**", config);
+            cors.configurationSource(source);
+        });
 
         // Add content negotiation strategy
         http.setSharedObject(ContentNegotiationStrategy.class, new HeaderContentNegotiationStrategy());
