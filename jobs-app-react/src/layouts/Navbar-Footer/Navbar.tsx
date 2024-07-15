@@ -38,6 +38,11 @@ export const Navbar = () => {
                 Search Internships
               </NavLink>
             </li>
+            <li className='nav-item'>
+              <NavLink className='nav-link' to={'/subscribe'}>
+                Subscribe
+              </NavLink>
+            </li>
           </ul>
           <ul className='navbar-nav ms-auto'>
             {!authState.isAuthenticated ? (

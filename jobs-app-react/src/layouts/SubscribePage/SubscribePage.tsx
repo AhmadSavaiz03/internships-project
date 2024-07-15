@@ -1,102 +1,149 @@
+import { useOktaAuth } from '@okta/okta-react';
 import React, { useEffect, useState } from 'react';
+import { SpinnerLoading } from '../utils/SpinnerLoading';
+import { Link } from 'react-router-dom';
 
 interface SubscriptionRequest {
-  userEmail: string;
   roles: string[];
   regions: string[];
 }
 
-const SubscribePage: React.FC = () => {
-  const [userEmail, setUserEmail] = useState<string>('');
+export const SubscribePage: React.FC = () => {
+  const { authState } = useOktaAuth();
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState<string | null>(null);
+
+  // User input roles and regions
   const [roles, setRoles] = useState<string[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
+
+  // Fetching all available roles and regions
   const [allRoles, setAllRoles] = useState<string[]>([]);
   const [allRegions, setAllRegions] = useState<string[]>([]);
+  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
+  const [isLoadingRegions, setIsLoadingRegions] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/subscribe/roles')
-      .then((response) => response.json())
-      .then((data) => setAllRoles(data))
-      .catch((error) => console.error('Error fetching roles:', error));
+    const fetchAllRoles = async () => {
+      try {
+        const allRolesUrl = 'http://localhost:8080/api/subscribe/roles';
+        const responseRoles = await fetch(allRolesUrl);
 
-    fetch('http://localhost:8080/api/subscribe/regions')
-      .then((response) => response.json())
-      .then((data) => setAllRegions(data))
-      .catch((error) => console.error('Error fetching regions:', error));
+        if (!responseRoles.ok) {
+          throw new Error('Something went wrong fetching all roles!');
+        }
+        const responseJson = await responseRoles.json();
+        setAllRoles(responseJson);
+        setIsLoadingRoles(false);
+      } catch (error: any) {
+        setIsLoading(false);
+        setHttpError(error.message);
+      }
+    };
+    fetchAllRoles();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    const fetchAllRegions = async () => {
+      try {
+        const allRegionsUrl = 'http://localhost:8080/api/subscribe/regions';
+        const responseRegions = await fetch(allRegionsUrl);
 
+        if (!responseRegions.ok) {
+          throw new Error('Something went wrong fetching all regions!');
+        }
+        const responseJson = await responseRegions.json();
+        setAllRegions(responseJson);
+        setIsLoadingRegions(false);
+      } catch (error: any) {
+        setIsLoading(false);
+        setHttpError(error.message);
+      }
+    };
+    fetchAllRegions();
+  }, []);
+
+  //   if (isLoading || isLoadingRoles || isLoadingRegions) {
+  //     return <SpinnerLoading />;
+  //   }
+
+  if (httpError) {
+    return (
+      <div className='container m-5'>
+        <p>{httpError}</p>
+      </div>
+    );
+  }
+
+  const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const options = event.target.options;
+    const selected: string[] = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        selected.push(options[i].value);
+      }
+    }
+    setRoles(selected);
+  };
+
+  const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const options = event.target.options;
+    const selected: string[] = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        selected.push(options[i].value);
+      }
+    }
+    setRegions(selected);
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!authState?.isAuthenticated) {
+      setHttpError('User is not authenticated');
+      return;
+    }
+
+    const token = authState.accessToken?.accessToken;
     const subscriptionRequest: SubscriptionRequest = {
-      userEmail,
       roles,
       regions,
     };
 
-    const token = 'your-jwt-token'; // Replace with actual token retrieval logic
-
     try {
-      const response = await fetch(
-        'http://localhost:8080/api/subscribe/submit',
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(subscriptionRequest),
-        }
-      );
+      const url = 'http://localhost:8080/api/subscribe/secure/submit';
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(subscriptionRequest),
+      };
+      const response = await fetch(url, requestOptions);
 
       if (!response.ok) {
-        throw new Error('Something went wrong while subscribing');
+        throw new Error('Something went wrong!');
       }
 
-      const result = await response.json();
-      console.log('Subscription successful:', result);
-    } catch (error) {
-      console.error('Error:', error);
+      alert('Subscription successful!');
+    } catch (error: any) {
+      setHttpError(error.message);
     }
-  };
-
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setRoles(selectedOptions);
-  };
-
-  const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setRegions(selectedOptions);
   };
 
   return (
     <div className='container mt-5'>
       <h1>Subscribe to Job Alerts</h1>
+      {httpError && <p className='text-danger'>{httpError}</p>}
       <form onSubmit={handleSubmit}>
         <div className='form-group'>
-          <label htmlFor='email'>Email address</label>
-          <input
-            type='email'
-            className='form-control'
-            id='email'
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className='form-group'>
-          <label htmlFor='roles'>Select Roles</label>
+          <label htmlFor='roles'>Select Roles:</label>
           <select
-            multiple
-            className='form-control'
             id='roles'
+            className='form-control'
+            multiple
             value={roles}
             onChange={handleRoleChange}>
             {allRoles.map((role) => (
@@ -107,11 +154,11 @@ const SubscribePage: React.FC = () => {
           </select>
         </div>
         <div className='form-group'>
-          <label htmlFor='regions'>Select Regions</label>
+          <label htmlFor='regions'>Select Regions:</label>
           <select
-            multiple
-            className='form-control'
             id='regions'
+            className='form-control'
+            multiple
             value={regions}
             onChange={handleRegionChange}>
             {allRegions.map((region) => (
@@ -121,9 +168,15 @@ const SubscribePage: React.FC = () => {
             ))}
           </select>
         </div>
-        <button type='submit' className='btn btn-primary'>
-          Subscribe
-        </button>
+        {authState?.isAuthenticated ? (
+          <button type='submit' className='btn btn-primary mt-3'>
+            Subscribe
+          </button>
+        ) : (
+          <Link className='btn main-color btn-lg text-white' to={'/login'}>
+            Sign In
+          </Link>
+        )}
       </form>
     </div>
   );

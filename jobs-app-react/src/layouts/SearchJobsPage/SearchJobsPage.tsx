@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import JobModel from "../../models/JobModel";
-import { SpinnerLoading } from "../utils/SpinnerLoading";
-import { SearchJob } from "./components/SearchJob";
-import { Pagination } from "../utils/Pagination";
+import { useState, useEffect } from 'react';
+import JobModel from '../../models/JobModel';
+import { SpinnerLoading } from '../utils/SpinnerLoading';
+import { SearchJob } from './components/SearchJob';
+import { Pagination } from '../utils/Pagination';
 
 export const SearchJobsPage = () => {
   const [jobs, setJobs] = useState<JobModel[]>([]);
@@ -12,21 +12,21 @@ export const SearchJobsPage = () => {
   const [jobsPerPage] = useState(5);
   const [totalAmountOfJobs, setTotalAmountOfJobs] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [search, setSearch] = useState("");
-  const [searchUrl, setSearchUrl] = useState("");
-  const [categorySelection, setCategorySelection] = useState("Job category");
+  const [search, setSearch] = useState('');
+  const [searchUrl, setSearchUrl] = useState('');
+  const [categorySelection, setCategorySelection] = useState('Job category');
 
   useEffect(() => {
     const fetchJobs = async () => {
       // fetching
-      const baseUrl: string = "http://localhost:8080/api/jobs";
+      const baseUrl: string = 'http://localhost:8080/api/jobs';
       let url: string = ``;
 
-      if (searchUrl === "") {
+      if (searchUrl === '') {
         url = `${baseUrl}?page=${currentPage - 1}&size=${jobsPerPage}`;
       } else {
         let searchWithPage = searchUrl.replace(
-          "<pageNumber>",
+          '<pageNumber>',
           `${currentPage - 1}`
         );
         url = baseUrl + searchWithPage;
@@ -34,7 +34,7 @@ export const SearchJobsPage = () => {
 
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error("Something went wrong while fetching from API");
+        throw new Error('Something went wrong while fetching from API');
       }
 
       // json to data
@@ -74,7 +74,7 @@ export const SearchJobsPage = () => {
 
   if (httpError) {
     return (
-      <div className="container m-5">
+      <div className='container m-5'>
         <p>{httpError}</p>
       </div>
     );
@@ -83,31 +83,31 @@ export const SearchJobsPage = () => {
   // search logic
   const searchHandleChange = () => {
     setCurrentPage(1);
-    if (search === "") {
-      setSearchUrl("");
+    if (search === '') {
+      setSearchUrl('');
     } else {
       setSearchUrl(
         `/search/findByTitleContaining?title=${search}&page=<pageNumber>&size=${jobsPerPage}`
       );
     }
-    setCategorySelection("Job category");
+    setCategorySelection('Job category');
   };
 
   // FIX LATER
   const categoryField = (value: string) => {
     setCurrentPage(1);
     if (
-      value.toLowerCase() === "fe" ||
-      value.toLowerCase() === "be" ||
-      value.toLowerCase() === "data" ||
-      value.toLowerCase() === "devops"
+      value.toLowerCase() === 'fe' ||
+      value.toLowerCase() === 'be' ||
+      value.toLowerCase() === 'data' ||
+      value.toLowerCase() === 'devops'
     ) {
       setCategorySelection(value);
       setSearchUrl(
         `/search/findByDescription?description=${value}&page=<pageNumber>&size=${jobsPerPage}`
       );
     } else {
-      setCategorySelection("All");
+      setCategorySelection('All');
       setSearchUrl(`?page=<pageNumber>&size=${jobsPerPage}`);
     }
   };
@@ -123,58 +123,55 @@ export const SearchJobsPage = () => {
 
   return (
     <div>
-      <div className="container">
+      <div className='container'>
         <div>
-          <div className="row mt-5">
-            <div className="col-6">
-              <div className="d-flex">
+          <div className='row mt-5'>
+            <div className='col-6'>
+              <div className='d-flex'>
                 <input
-                  className="form-control me-2"
-                  type="search"
-                  placeholder="Search"
-                  aria-labelledby="Search"
+                  className='form-control me-2'
+                  type='search'
+                  placeholder='Search'
+                  aria-labelledby='Search'
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <button
-                  className="btn btn-outline-success"
-                  onClick={() => searchHandleChange()}
-                >
+                  className='btn btn-outline-success'
+                  onClick={() => searchHandleChange()}>
                   Search
                 </button>
               </div>
             </div>
-            <div className="col-4">
-              <div className="dropdown">
+            <div className='col-4'>
+              <div className='dropdown'>
                 <button
-                  className="btn btn-secondary dropdown-toggle"
-                  type="button"
-                  id="dropdownMenuButton1"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
+                  className='btn btn-secondary dropdown-toggle'
+                  type='button'
+                  id='dropdownMenuButton1'
+                  data-bs-toggle='dropdown'
+                  aria-expanded='false'>
                   {categorySelection}
                 </button>
                 <ul
-                  className="dropdown-menu"
-                  aria-labelledby="dropdownMenuButton1"
-                >
-                  <li onClick={() => categoryField("All")}>
-                    <a className="dropdown-item" href="">
+                  className='dropdown-menu'
+                  aria-labelledby='dropdownMenuButton1'>
+                  <li onClick={() => categoryField('All')}>
+                    <a className='dropdown-item' href=''>
                       ALL
                     </a>
                   </li>
-                  <li onClick={() => categoryField("FE")}>
-                    <a className="dropdown-item" href="">
+                  <li onClick={() => categoryField('FE')}>
+                    <a className='dropdown-item' href=''>
                       Front End
                     </a>
                   </li>
-                  <li onClick={() => categoryField("BE")}>
-                    <a className="dropdown-item" href="">
+                  <li onClick={() => categoryField('BE')}>
+                    <a className='dropdown-item' href=''>
                       Back End
                     </a>
                   </li>
-                  <li onClick={() => categoryField("DevOps")}>
-                    <a className="dropdown-item" href="">
+                  <li onClick={() => categoryField('DevOps')}>
+                    <a className='dropdown-item' href=''>
                       Dev Ops
                     </a>
                   </li>
@@ -184,7 +181,7 @@ export const SearchJobsPage = () => {
           </div>
           {totalAmountOfJobs > 0 ? (
             <>
-              <div className="mt-3">
+              <div className='mt-3'>
                 <h5>Number of results: ({totalAmountOfJobs})</h5>
               </div>
               <p>
@@ -195,13 +192,12 @@ export const SearchJobsPage = () => {
               ))}
             </>
           ) : (
-            <div className="m-5">
+            <div className='m-5'>
               <h3>The roles you are looking for are not available.</h3>
               <a
-                type="button"
-                className="btn main-color btn-md px-4 me-md-2 fw-bold text-white"
-                href="#"
-              >
+                type='button'
+                className='btn main-color btn-md px-4 me-md-2 fw-bold text-white'
+                href='#'>
                 Library Services
               </a>
             </div>

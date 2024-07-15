@@ -9,7 +9,7 @@ import { oktaConfig } from './lib/oktaConfig';
 import { OktaAuth, toRelativeUrl } from '@okta/okta-auth-js';
 import { LoginCallback, Security } from '@okta/okta-react';
 import LoginWidget from './auth/LoginWidget';
-import SubscribePage from './layouts/SubscribePage/SubscribePage';
+import { SubscribePage } from './layouts/SubscribePage/SubscribePage';
 
 const oktaAuth = new OktaAuth(oktaConfig);
 function App() {
@@ -59,7 +59,7 @@ function App() {
           path={'/login'}
           render={() => <LoginWidget config={oktaConfig} />}
         />
-        <Route path={'/logn/callback'} component={LoginCallback} />
+        <Route path={'/login/callback'} component={LoginCallback} />
 
         <Footer />
       </Security>

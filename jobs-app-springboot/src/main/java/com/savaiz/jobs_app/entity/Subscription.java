@@ -27,11 +27,11 @@ public class Subscription {
 
     @ElementCollection
     @CollectionTable(name = "subscription_roles", joinColumns = @JoinColumn(name = "subscription_id"))
-    @Column(name = "roles")
+    @Column(name = "role")
     private List<String> roles;
 
     @ElementCollection
     @CollectionTable(name = "subscription_regions", joinColumns = @JoinColumn(name = "subscription_id"))
-    @Column(name = "regions")
+    @Column(name = "region")
     private List<String> regions;
 }

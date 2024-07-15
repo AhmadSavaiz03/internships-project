@@ -24,7 +24,7 @@ public class SubscriptionService {
         Subscription existingSubscription = subscriptionRepository.findByUserEmail(userEmail);
 
         if(existingSubscription != null) {
-            throw new Exception("User email already subscribed");
+            subscriptionRepository.delete(existingSubscription);
         }
 
         Subscription subscription = new Subscription(userEmail, roles, regions);

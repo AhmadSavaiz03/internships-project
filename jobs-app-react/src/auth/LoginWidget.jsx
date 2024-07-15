@@ -11,7 +11,7 @@ const LoginWidget = ({ config }) => {
   };
 
   const onError = (err) => {
-    console.log('Sign in error', err);
+    console.log('Sign in error: ', err);
   };
 
   if (!authState) {
