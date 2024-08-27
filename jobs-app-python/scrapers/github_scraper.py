@@ -1,7 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
-
+from models.job import Job
+from database.db_operations import insert_job
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk import FreqDist
+import string
 
 def github_scrape(url):
     response = requests.get(url)
@@ -22,7 +27,7 @@ def github_scrape(url):
         if len(cells) > 0:
             row = []
             for idx, cell in enumerate(cells):
-                if idx == 0:  # Assuming the company name is always in the first column
+                if idx == 0:
                     company_name = cell.get_text(strip=True)
                     row.append(company_name)
                 else:
@@ -36,42 +41,43 @@ def github_scrape(url):
     df = pd.DataFrame(rows, columns=headers)
     return df
 
-
 def extract_job_description(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.content, 'html.parser')
-
-        # Extract the main text content
         paragraphs = soup.find_all(['p', 'div', 'li', 'ul', 'span'])
         job_description = " ".join([para.get_text(strip=True) for para in paragraphs if para.get_text(strip=True)])
-
         return job_description
     except Exception as e:
         print(f"Failed to retrieve job description from {url}: {e}")
         return None
 
-def add_job_descriptions(df):
-    job_descriptions = []
-    for link in df['Application/Link']:
-        if link:
-            job_description = extract_job_description(link)
-            job_descriptions.append(job_description)
-        else:
-            job_descriptions.append(None)
-    df['Job Description'] = job_descriptions
-    return df
+def extract_keywords(text):
+    stop_words = set(stopwords.words('english'))
+    tokens = word_tokenize(text)
+    tokens = [word for word in tokens if word.isalnum()]
+    tokens = [word for word in tokens if word.lower() not in stop_words]
+    tokens = [word for word in tokens if word.lower() not in string.punctuation]
+    freq_dist = FreqDist(tokens)
+    return list(freq_dist.keys())[:10]  # Return the top 10 keywords
 
+def process_jobs_from_github(url):
+    df = github_scrape(url)
+    for index, row in df.iterrows():
+        job_description = extract_job_description(row['Application/Link'])
+        if job_description:
+            keywords = extract_keywords(job_description)
+            job = Job(
+                title=row['Role'],
+                description=job_description,
+                company=row['Company'],
+                location=row['Location'],
+                keywords=keywords,
+                date_posted=None 
+            )
+            insert_job(job)
 
 url = "https://github.com/SimplifyJobs/Summer2025-Internships"
-raw_df = github_scrape(url)
-link_list = raw_df['Application/Link'].tolist()
-print(extract_job_description(link_list[0]))
-
-# df = add_job_descriptions(raw_df)
-# print(df)
-
-
-# 'Company', 'Role', 'Location', 'Application/Link', 'Date Posted'
+process_jobs_from_github(url)

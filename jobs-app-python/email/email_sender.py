@@ -7,7 +7,6 @@ import logging
 logging.basicConfig(filename='email_sender.log', level=logging.INFO, format='%(asctime)s %(message)s')
 
 def send_emails():
-    """Sends emails to users about new job postings matching their subscriptions."""
     try:
         yag = yagmail.SMTP(EMAIL_USER, EMAIL_PASSWORD)
         last_check_time = datetime.datetime.now() - datetime.timedelta(hours=12)
@@ -27,7 +26,7 @@ def send_emails():
             if matching_jobs:
                 contents = "New job postings matching your subscriptions:\n\n"
                 for job in matching_jobs:
-                    contents += f"Title: {job.title}\nDescription: {job.description}\nCompany: {job.company}\nLocation: {job.location}\nDate Posted: {job.date_posted}\n\n"
+                    contents += f"Title: {job.title}\nDescription: {job.description}\nCompany: {job.company}\nLocation: {job.location}\nKeywords: {', '.join(job.keywords)}\nDate Posted: {job.date_posted}\n\n"
                 yag.send(
                     to=user_email,
                     subject="New Job Postings",
