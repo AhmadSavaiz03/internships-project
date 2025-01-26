@@ -1,4 +1,4 @@
-# Internship Finder
+# Internship Finder (in progress)
 
 I created this project to help students, like myself, find internships based on time period and geography without relying on career advising centers. Many students lack the guidance that some schools and services offer, and I hope this tool can serve as an alternative. The goal is to enable students to research various internship roles, their timelines, descriptions, and keywords, while keeping track of them geographically and chronologically.
 
